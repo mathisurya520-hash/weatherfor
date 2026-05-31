@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherVerse // Futuristic Cyber-Meteorological HUD</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Dynamic Weather Background Container -->
+    <div id="weather-bg" class="weather-bg clear-sky">
+        <div id="particle-container" class="particle-container"></div>
+        <div id="lightning-overlay" class="lightning-overlay"></div>
+    </div>
+
+    <!-- HUD Overlay grid background lines -->
+    <div class="hud-grid-overlay"></div>
+
+    <!-- Loading Screen Overlay -->
+    <div id="loader" class="loader-overlay hidden">
+        <div class="loader-scanner"></div>
+        <div class="loader-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-dot"></div>
+        </div>
+        <p class="loader-text">ACCESSING METEOROLOGICAL GRID...</p>
+    </div>
+
+    <!-- Core App Container -->
+    <main class="app-container">
+        
+        <!-- Header / Hero Section -->
+        <header class="app-header">
+            <div class="header-logo">
+                <span class="cyber-glitch" data-text="WEATHERVERSE">WEATHERVERSE</span>
+                <span class="logo-accent">// HUD v4.0.2</span>
+            </div>
+            <div class="header-subtitle">NEO-METEOROLOGICAL DIAGNOSTIC INTERFACE</div>
+            
+            <!-- Connection Status -->
+            <div class="connection-status" id="connection-status">
+                <span class="status-dot simulated"></span>
+                <span class="status-text" id="status-text">SIMULATION MODE</span>
+            </div>
+        </header>
+
+        <!-- API Config Dropdown (Glass Panel) -->
+        <section class="api-config-panel glass-panel collapsed" id="api-panel">
+            <button class="api-panel-toggle" id="api-toggle-btn" aria-label="Toggle API Key panel">
+                <span class="toggle-icon">⚙</span>
+                <span class="toggle-text">API CONFIGURATION</span>
+            </button>
+            <div class="api-panel-content">
+                <p class="api-help-text">Enter an OpenWeatherMap API Key to fetch live real-time conditions. If blank, the HUD runs in simulation mode.</p>
+                <div class="api-input-group">
+                    <input type="password" id="api-key-input" placeholder="Paste OpenWeatherMap API Key..." aria-label="API Key input">
+                    <button class="btn-glow btn-save" id="save-api-btn">INITIALIZE LIVE LINK</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search and Action Bar -->
+        <section class="search-section">
+            <div class="search-container glass-panel">
+                <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="city-search" placeholder="SCANNING FOR TARGET GRID / ENTER CITY..." aria-label="Search city">
+                <button class="btn-glow btn-search" id="search-btn">SEARCH</button>
+                <button class="btn-icon-glow" id="locate-btn" title="Auto-detect Current Coordinates">
+                    <svg class="locate-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="error-banner hidden" id="error-banner">
+                <svg class="error-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span id="error-message">GRID ACCESS ERROR: TARGET TERMINAL NOT RESOLVED.</span>
+            </div>
+        </section>
+
+        <!-- Primary Dashboard HUD Grid -->
+        <section class="dashboard-grid">
+            
+            <!-- Left Side: Main Core Weather Card -->
+            <div class="glass-panel main-weather-card">
+                <div class="card-glow-border"></div>
+                <div class="weather-card-header">
+                    <div>
+                        <h2 class="location-name" id="location-name">NEO-TOKYO</h2>
+                        <div class="system-time" id="system-time">GRID TIME // 20:16:45</div>
+                    </div>
+                    <div class="weather-badge-icon" id="weather-badge-icon">
+                        <!-- Custom animated SVGs will go here -->
+                        <svg class="weather-icon-svg" viewBox="0 0 64 64" id="primary-weather-svg">
+                            <!-- Star/Sun template -->
+                            <circle class="sun-body animated-pulse" cx="32" cy="32" r="12" fill="none" stroke="currentColor" stroke-width="3"></circle>
+                            <line class="sun-ray" x1="32" y1="8" x2="32" y2="14" stroke="currentColor" stroke-width="3" stroke-linecap="round"></line>
+                            <line class="sun-ray" x1="32" y1="50" x2="32" y2="56" stroke="currentColor" stroke-width="3" stroke-linecap="round"></line>
+                            <line class="sun-ray" x1="8" y1="32" x2="14" y2="32" stroke="currentColor" stroke-width="3" stroke-linecap="round"></line>
+                            <line class="sun-ray" x1="50" y1="32" x2="56" y2="32" stroke="currentColor" stroke-width="3" stroke-linecap="round"></line>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="weather-temp-container">
+                    <span class="large-temperature" id="current-temp">24°</span>
+                    <span class="temp-unit">C</span>
+                    <div class="weather-description" id="weather-description">CLEAR SKIES</div>
+                </div>
+
+                <!-- Weather Mood Card (Futuristic Cyber-Quote) -->
+                <div class="mood-box" id="mood-box">
+                    <div class="mood-title">COGNITIVE INDEX RECOMMENDATION</div>
+                    <div class="mood-text" id="mood-text">Perfect day for productivity ☀️</div>
+                </div>
+            </div>
+
+            <!-- Middle: Interactive Gauges -->
+            <div class="gauges-container">
+                
+                <!-- Interactive Temp Gauge -->
+                <div class="glass-panel gauge-card">
+                    <div class="card-glow-border"></div>
+                    <h3 class="card-title">TEMPERATURE SENSOR GAP</h3>
+                    <div class="temp-gauge-wrapper">
+                        <div class="gauge-scale">
+                            <span class="scale-label">-20°C</span>
+                            <span class="scale-label">15°C</span>
+                            <span class="scale-label">50°C</span>
+                        </div>
+                        <div class="gauge-bar-track">
+                            <div class="gauge-bar-fill" id="temp-gauge-fill" style="width: 62.8%;"></div>
+                            <div class="gauge-needle" id="temp-gauge-needle" style="left: 62.8%;"></div>
+                        </div>
+                        <div class="gauge-footer-stats">
+                            <div>MIN OPERATIONAL: <span id="temp-min">-2°C</span></div>
+                            <div>MAX PEAK: <span id="temp-max">31°C</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Air Quality Circle Meter -->
+                <div class="glass-panel gauge-card">
+                    <div class="card-glow-border"></div>
+                    <h3 class="card-title">ATMOSPHERIC AIR QUALITY INDEX</h3>
+                    <div class="aqi-meter-wrapper">
+                        <div class="aqi-circle-svg-container">
+                            <svg class="aqi-circle" viewBox="0 0 100 100">
+                                <!-- Background Circle -->
+                                <circle class="aqi-bg" cx="50" cy="50" r="40" fill="none" stroke-width="6"></circle>
+                                <!-- Meter Circle -->
+                                <circle class="aqi-progress" id="aqi-progress-circle" cx="50" cy="50" r="40" fill="none" stroke-width="6" stroke-dasharray="251.2" stroke-dashoffset="150"></circle>
+                            </svg>
+                            <div class="aqi-value-overlay">
+                                <span class="aqi-num" id="aqi-val">2</span>
+                                <span class="aqi-label">AQI</span>
+                            </div>
+                        </div>
+                        <div class="aqi-details-text">
+                            <span class="aqi-status" id="aqi-status-text">ATMOSPHERE STABLE</span>
+                            <span class="aqi-rating" id="aqi-rating-text">GOOD STATUS (PM2.5: 8.4 µg/m³)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side / Secondary Data Grid -->
+            <div class="secondary-data-grid">
+                
+                <!-- Feels Like Sensor -->
+                <div class="glass-panel sensor-card">
+                    <div class="sensor-icon cyan">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="sensor-content">
+                        <span class="sensor-title">FEELS LIKE</span>
+                        <span class="sensor-value" id="feels-like-val">22.5°C</span>
+                    </div>
+                </div>
+
+                <!-- Humidity Sensor -->
+                <div class="glass-panel sensor-card">
+                    <div class="sensor-icon blue">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="sensor-content">
+                        <span class="sensor-title">HUMIDITY</span>
+                        <span class="sensor-value" id="humidity-val">68%</span>
+                    </div>
+                </div>
+
+                <!-- Wind Speed Sensor -->
+                <div class="glass-panel sensor-card">
+                    <div class="sensor-icon purple">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
+                        </svg>
+                    </div>
+                    <div class="sensor-content">
+                        <span class="sensor-title">WIND SPEED</span>
+                        <span class="sensor-value" id="wind-val">12.4 km/h</span>
+                    </div>
+                </div>
+
+                <!-- Visibility Sensor -->
+                <div class="glass-panel sensor-card">
+                    <div class="sensor-icon pink">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div class="sensor-content">
+                        <span class="sensor-title">VISIBILITY SCAN</span>
+                        <span class="sensor-value" id="visibility-val">10.0 km</span>
+                    </div>
+                </div>
+
+                <!-- Sunrise / Sunset Solar Card (Span 2) -->
+                <div class="glass-panel sensor-card col-span-2 solar-card">
+                    <div class="solar-arc-container">
+                        <svg class="solar-arc-svg" viewBox="0 0 200 80">
+                            <!-- Ground Line -->
+                            <line x1="10" y1="70" x2="190" y2="70" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3"></line>
+                            <!-- Solar Path Arc -->
+                            <path d="M20,70 A80,80 0 0,1 180,70" fill="none" stroke="rgba(6, 182, 212, 0.25)" stroke-width="2"></path>
+                            <!-- Dynamic Sun Dot -->
+                            <circle class="sun-tracker-dot" id="sun-tracker-dot" cx="100" cy="30" r="5" fill="#06b6d4"></circle>
+                        </svg>
+                        <div class="solar-timeline">
+                            <div class="solar-time-block">
+                                <span class="solar-label">SUNRISE ASCENT</span>
+                                <span class="solar-time" id="sunrise-val">05:42</span>
+                            </div>
+                            <div class="solar-time-block text-right">
+                                <span class="solar-label">SUNSET DESCENT</span>
+                                <span class="solar-time" id="sunset-val">19:12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Simulated Grid Presets -->
+        <section class="preset-section">
+            <h3 class="preset-title">SELECT TARGET NODE FOR SIMULATED WEATHER INTERACTION</h3>
+            <div class="preset-buttons">
+                <button class="preset-btn active" data-city="Neo-Tokyo">
+                    <span class="preset-glow"></span>
+                    NEO-TOKYO // TOKYO
+                </button>
+                <button class="preset-btn" data-city="Nova-London">
+                    <span class="preset-glow"></span>
+                    NOVA-LONDON // LONDON
+                </button>
+                <button class="preset-btn" data-city="Cyber-Denver">
+                    <span class="preset-glow"></span>
+                    CYBER-DENVER // DENVER
+                </button>
+                <button class="preset-btn" data-city="Neo-Delhi">
+                    <span class="preset-glow"></span>
+                    NEO-DELHI // NEW DELHI
+                </button>
+                <button class="preset-btn" data-city="Neo-Paris">
+                    <span class="preset-glow"></span>
+                    NEO-PARIS // PARIS
+                </button>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Footer System Status -->
+    <footer class="app-footer">
+        <div class="footer-left">NEURAL WEATHER NETWORK SYSTEM // SECURE PORT STATUS: NOMINAL</div>
+        <div class="footer-right">&copy; 2026 WEATHERVERSE CORPS. ALL SYSTEMS INTEGRATED.</div>
+    </footer>
+
+    <!-- App Script -->
+    <script src="app.js"></script>
+</body>
+</html>
